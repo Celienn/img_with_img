@@ -16,9 +16,11 @@ fs.readdir(res, function(err, filenames) {
     }
     filenames.forEach(function(filename) {
         const index = filenames.indexOf(filename)
-        const extension = filename.split(".")[filename.split(".").length-1]
-        console.log(res + "/" + filename + " ==> " + res + "/" + index + "." + extension)
-        fs.renameSync(res + "/" + filename,res + "/" + index + "." + extension)
+        if(parseInt(filename) != index){
+            const extension = filename.split(".")[filename.split(".").length-1]
+            console.log(res + "/" + filename + " ==> " + res + "/" + index + "." + extension)
+            fs.renameSync(res + "/" + filename,res + "/" + index + "." + extension)
+        }
     });
 });
 
@@ -30,6 +32,10 @@ app.get('/', (req, res) => {
         }
     })
     res.sendFile(__dirname + "/client/client.html")
+});
+
+app.post('/upload-img', (req, res) => {    
+    
 });
 
 app.listen(port, () => {
