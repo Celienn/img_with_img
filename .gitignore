@@ -1,2 +1,3 @@
 node_modules/
-ressource/11.jpg
+*.jpg
+*.png

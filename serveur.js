@@ -24,6 +24,8 @@ fs.readdir(res, function(err, filenames) {
     });
 });
 
+//spawn("python " + __dirname + "/init.py")
+
 app.use(fileUpload());
 
 app.get('/', (req, res) => {
