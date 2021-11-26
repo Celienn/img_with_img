@@ -31,11 +31,13 @@ for x in range(round(img.size[0]/50)) :
             c1 = colormy
             c2 = data[filename][1]
             dist = math.sqrt( (c1[0]-c2[0])**2 + (c1[1]-c2[1])**2 + (c1[2]-c2[2])**2 )
-            if dist > olddist :
+            if dist < olddist :
                 olddist = dist
                 best = data[filename]
             if(dist==0):
                 break
+        print(str(best) + " and " + str(data[filename][1]))
+
 filename = sys.argv[1].split("/")
 filename = filename[len(filename)-1]
 img.save(sys.argv[1].split(filename)[0] + "output_" + filename)
