@@ -4,24 +4,32 @@ import math
 import json
 import os
 
+#2400 1600 : old resolution
+Config = {
+    "resolution" : 50,
+    "pixelresolution" : 50,
+}
+
 def resize_image(img,resize=None) :
     if resize is not None :
          img = img.resize(resize,Image.ANTIALIAS)
     
     return img
-
 img = Image.open(sys.argv[1])
-img = resize_image(img,(2400,1600))
+resolution = Config["resolution"]
+trueresolution = (round(resolution*Config["pixelresolution"]), round( (resolution*Config["pixelresolution"]) / abs(img.size[0]/img.size[1]) ))
+print(trueresolution)
+img = resize_image(img, trueresolution)
 imgData = {}
-for x in range(round(img.size[0]/50)) :
-    for y in range(round(img.size[1]/50)) :
+for x in range(round(img.size[0]/Config["pixelresolution"])) :
+    for y in range(round(img.size[1]/Config["pixelresolution"])) :
         colormy = (0,0,0)
-        for w in range(50) :
-            X = ((x)*50)+w
-            for h in range(50) :
-                Y = ((y)*50)+h
+        for w in range(Config["pixelresolution"]) :
+            X = ((x-1)*Config["pixelresolution"])+w
+            for h in range(Config["pixelresolution"]) :
+                Y = ((y-1)*Config["pixelresolution"])+h
                 colormy = (colormy[0]+img.getpixel((X,Y))[0],colormy[1]+img.getpixel((X,Y))[1],colormy[2]+img.getpixel((X,Y))[2])
-        colormy = (colormy[0]/2500,colormy[1]/2500,colormy[2]/2500)
+        colormy = (colormy[0]/img.size[0],colormy[1]/img.size[0],colormy[2]/img.size[0])
         imgData[str(x)+"x"+str(y)+"y"] = colormy
         data = open("data.json")
         data = json.load(data)
@@ -36,8 +44,16 @@ for x in range(round(img.size[0]/50)) :
                 best = data[filename]
             if(dist==0):
                 break
-        print(str(best) + " and " + str(data[filename][1]))
-
+        #print(str(best) + " and " + str(data[filename][1])) 
+        newImg = img
+        for w in range(Config["pixelresolution"]) :
+            X = ((x-1)*Config["pixelresolution"])+w
+            for h in range(Config["pixelresolution"]) :
+                Y = ((y-1)*Config["pixelresolution"])+h
+                #newImg.putpixel((X,Y),(round(best[1][0]),round(best[1][1]),round(best[1][2])))
+        pasteImg = Image.open(best[0])
+        newImg.paste(pasteImg,(X-w,Y-h))
 filename = sys.argv[1].split("/")
 filename = filename[len(filename)-1]
-img.save(sys.argv[1].split(filename)[0] + "output_" + filename)
+img.save(os.getcwd() + "/temp/" + "output_" + filename)
+#img.save(sys.argv[1].split(filename)[0] + "output_" + filename)
