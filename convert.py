@@ -25,9 +25,9 @@ for x in range(round(img.size[0]/Config["pixelresolution"])) :
     for y in range(round(img.size[1]/Config["pixelresolution"])) :
         colormy = (0,0,0)
         for w in range(Config["pixelresolution"]) :
-            X = ((x-1)*Config["pixelresolution"])+w
+            X = ((x)*Config["pixelresolution"])+w
             for h in range(Config["pixelresolution"]) :
-                Y = ((y-1)*Config["pixelresolution"])+h
+                Y = ((y)*Config["pixelresolution"])+h
                 colormy = (colormy[0]+img.getpixel((X,Y))[0],colormy[1]+img.getpixel((X,Y))[1],colormy[2]+img.getpixel((X,Y))[2])
         colormy = (colormy[0]/img.size[0],colormy[1]/img.size[0],colormy[2]/img.size[0])
         imgData[str(x)+"x"+str(y)+"y"] = colormy
@@ -47,9 +47,9 @@ for x in range(round(img.size[0]/Config["pixelresolution"])) :
         #print(str(best) + " and " + str(data[filename][1])) 
         newImg = img
         for w in range(Config["pixelresolution"]) :
-            X = ((x-1)*Config["pixelresolution"])+w
+            X = ((x)*Config["pixelresolution"])+w
             for h in range(Config["pixelresolution"]) :
-                Y = ((y-1)*Config["pixelresolution"])+h
+                Y = ((y)*Config["pixelresolution"])+h
                 #newImg.putpixel((X,Y),(round(best[1][0]),round(best[1][1]),round(best[1][2])))
         pasteImg = Image.open(best[0])
         newImg.paste(pasteImg,(X-w,Y-h))
