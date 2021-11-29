@@ -53,9 +53,13 @@ app.get('/show', (req, res) => {
       args[url.split("=")[0]] = urrl.split("=")[1]
     }
   }
-  array.forEach(element => {
-    if(args["id"] == element){
-
+  ShowId[0].forEach(element => {
+    if(args["id"] == ShowId[1][element]){
+      fs.promises.access(__dirname + "/temp/output_" + ShowId[1][element] + ".jpg").then(function(){
+        res.sendFile(__dirname + "/temp/output_" + ShowId[1][element] + ".jpg")
+      }).catch(function(){
+        res.send("Fichier en cour de traitement ...")
+      });
     }
   });
 });
@@ -96,7 +100,7 @@ app.post("/upload",(req,res) => {
   try{
     Interval["count"] = Interval["count"] + 1;
     const index = Interval["count"];
-    ShowId[0].push(index)
+    ShowId[0][ShowId[0].length] = index
     ShowId[1][index] = ""
     for(var z = 0 ; z < 10 ; z++){
       if(getRandom(z)%2==0){
@@ -112,31 +116,14 @@ app.post("/upload",(req,res) => {
         return
       }
       try{
-        res.redirect(req.baseUrl + "/show?" + ShowId[1][index])
+        res.redirect(req.baseUrl + "/show?id=" + ShowId[1][index])
         Interval["count"] = Interval["count"] + 1
-        Interval[index-1] = setInterval(() => {
-          fs.promises.access(__dirname + "/temp/" + filename).then(function(){
-            //exec("python " + __dirname + "/convert.py " + __dirname + "/temp/" + filename)
-            clearInterval(index-1)
-          }).catch(function(){});
-        });
         Interval[index] = setInterval(() => {
-          try{  
-            fs.promises.access(__dirname + "/temp/output_" + ShowId[1][index-1] + ".jpg").then(
-              function(){
-                console.log("Fichier trouvé")
-              }
-            ).catch(
-              function(){
-                console.log("Fichier introuvable")
-              }
-            )
-
-          }
-          catch(err){
-            console.log(err)
-          }
-        }, 1000);
+          fs.promises.access(__dirname + "/temp/" + filename).then(function(){
+            exec("python " + __dirname + "/convert.py " + __dirname + "/temp/" + filename)
+            clearInterval(index)
+          }).catch(function(){});
+        },10000);
       }
       catch(err){
         console.log(err)
