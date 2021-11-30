@@ -12,8 +12,9 @@ def resize_image(filename,resize=None) :
 
 tab = {}
 
-for filename in os.listdir(os.getcwd() + "/ressource") :    
-    img = resize_image(os.getcwd() + "/ressource/" + filename,(int(sys.argv[1]),sys.argv[2]))
+for filename in os.listdir(os.getcwd() + "/ressource") :
+    size = (int(sys.argv[1]),int(sys.argv[2]))
+    img = resize_image(os.getcwd() + "/ressource/" + filename,size)
     path = os.getcwd().split(filename)[0] + "/temp/" + filename.split(".")[0] + "_resize." + filename.split(".")[1]
     img.save(path) 
     colormy = (0,0,0)
