@@ -105,8 +105,8 @@ Interval[index] = setInterval(() => {
     const filename = toConvert[0][0]
     const resolution = toConvert[0][1]
     const pixelresolution = toConvert[0][2]
-    var init = exec("python " + __dirname + "/init.py " + resolution + " " + pixelresolution)
-    console.log("Start init " + resolution + " " + pixelresolution)
+    var init = exec("python " + __dirname + "/init.py " + pixelresolution)
+    console.log("Start init " + pixelresolution)
     init.on('exit',function(){
       console.log("Start convert " + __dirname + "/temp/" + filename + " " + resolution + " " + pixelresolution)
       var convert = exec("python " + __dirname + "/convert.py " + __dirname + "/temp/" + filename + " " + resolution + " " + pixelresolution)
