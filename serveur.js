@@ -94,6 +94,24 @@ app.get('/', (req, res) => {
     }
 });
 
+var toConvert = []
+
+function convert(filename,resolution,pixelresolution){
+  var init = exec("python " + __dirname + "/init.py " + resolution + " " + pixelresolution)
+  init.on('exit',function(){
+    var convert = exec("python " + __dirname + "/convert.py " + __dirname + "/temp/" + filename + " " + resolution + " " + pixelresolution)
+    convert.on('exit',function(){
+      if(toConvert[1] == undefined){
+        toConvert.shift()
+      }else{
+        toConvert.shift()
+        convert(toConvert[0][0],toConvert[0][1],toConvert[0][2])
+      }
+    });
+  });
+}
+
+
 app.post("/upload",(req,res) => {
   var url = req.url.split("?")[1]
   var args = []
@@ -127,10 +145,12 @@ app.post("/upload",(req,res) => {
       }
       try{
         res.redirect(req.baseUrl + "/show?id=" + ShowId[1][index])
-        var init = exec("python " + __dirname + "/init.py " + parseInt(args["resolution"]) + " " + parseInt(args["pixelresolution"]))
-        init.on('exit',function(){
-          exec("python " + __dirname + "/convert.py " + __dirname + "/temp/" + filename + " " + parseInt(args["resolution"]) + " " + parseInt(args["pixelresolution"]))
-        });
+        if(toConvert[0] == undefined){
+          toConvert.push([filename,parseInt(args["resolution"]),parseInt(args["pixelresolution"])])
+          convert(filename,parseInt(args["resolution"]),parseInt(args["pixelresolution"]))
+        }else{
+          toConvert.push([filename,parseInt(args["resolution"]),parseInt(args["pixelresolution"])])
+        }
       }
       catch(err){
         console.log(err)
