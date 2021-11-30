@@ -6,9 +6,18 @@ import os
 
 #2400 1600 : old resolution
 Config = {
-    "resolution" : 50,
+    "resolution" : 250,
     "pixelresolution" : 50,
 }
+
+try :
+    Config["resolution"] = int(sys.argv[2])
+except :
+    pass
+try :
+    Config["pixelresolution"] = int(sys.argv[3])
+except :
+    pass
 
 def resize_image(img,resize=None) :
     if resize is not None :
@@ -17,7 +26,7 @@ def resize_image(img,resize=None) :
     return img
 img = Image.open(sys.argv[1])
 resolution = Config["resolution"]
-trueresolution = (round(resolution*Config["pixelresolution"]), round( (resolution*Config["pixelresolution"]) / abs(img.size[0]/img.size[1]) ))
+trueresolution = (round(resolution*Config["pixelresolution"]), round( (resolution*Config["pixelresolution"]) / abs(img.size[0]/img.size[1])  ) + abs((round( (resolution*Config["pixelresolution"]) / abs(img.size[0]/img.size[1])  )%Config["pixelresolution"])-Config["pixelresolution"]))
 print(trueresolution)
 img = resize_image(img, trueresolution)
 imgData = {}
@@ -25,9 +34,10 @@ for x in range(round(img.size[0]/Config["pixelresolution"])) :
     for y in range(round(img.size[1]/Config["pixelresolution"])) :
         colormy = (0,0,0)
         for w in range(Config["pixelresolution"]) :
-            X = ((x)*Config["pixelresolution"])+w
+            X = (abs(x)*Config["pixelresolution"])+w
             for h in range(Config["pixelresolution"]) :
-                Y = ((y)*Config["pixelresolution"])+h
+                Y = (abs(y)*Config["pixelresolution"])+h
+                #print(str(X) + " and " + str(Y))
                 colormy = (colormy[0]+img.getpixel((X,Y))[0],colormy[1]+img.getpixel((X,Y))[1],colormy[2]+img.getpixel((X,Y))[2])
         colormy = (colormy[0]/img.size[0],colormy[1]/img.size[0],colormy[2]/img.size[0])
         imgData[str(x)+"x"+str(y)+"y"] = colormy
@@ -47,10 +57,10 @@ for x in range(round(img.size[0]/Config["pixelresolution"])) :
         #print(str(best) + " and " + str(data[filename][1])) 
         newImg = img
         for w in range(Config["pixelresolution"]) :
-            X = ((x)*Config["pixelresolution"])+w
+            X = (abs(x)*Config["pixelresolution"])+w
             for h in range(Config["pixelresolution"]) :
-                Y = ((y)*Config["pixelresolution"])+h
-                #newImg.putpixel((X,Y),(round(best[1][0]),round(best[1][1]),round(best[1][2])))
+                Y = (abs(y)*Config["pixelresolution"])+h
+                newImg.putpixel((X,Y),(round(best[1][0]),round(best[1][1]),round(best[1][2])))
         pasteImg = Image.open(best[0])
         newImg.paste(pasteImg,(X-w,Y-h))
 filename = sys.argv[1].split("/")

@@ -36,8 +36,6 @@ fs.readdir(res, function(err, filenames) {
     });
 });
 
-exec("python " + __dirname + "/init.py")
-
 app.use(fileUpload());
 
 app.get('/show', (req, res) => {
@@ -65,18 +63,18 @@ app.get('/show', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-    var url = req.url.split("?")[1]
-    var args = []
-    if(url != undefined){
-      if(url.split("&") != undefined){
-        var url = url.split("&")  
-        url.forEach(element => {
-          args[element.split("=")[0]] = element.split("=")[1]
-        });
-      }else{
-        args[url.split("=")[0]] = urrl.split("=")[1]
-      }
+  var url = req.url.split("?")[1]
+  var args = []
+  if(url != undefined){
+    if(url.split("&") != undefined){
+      var url = url.split("&")  
+      url.forEach(element => {
+        args[element.split("=")[0]] = element.split("=")[1]
+      });
+    }else{
+      args[url.split("=")[0]] = urrl.split("=")[1]
     }
+  }
     if(args["file"] == undefined){
       const file = fs.readFile(__dirname + "/client/client.html", 'utf8' , (err, data) => {
         if (err) {
@@ -97,6 +95,18 @@ app.get('/', (req, res) => {
 });
 
 app.post("/upload",(req,res) => {
+  var url = req.url.split("?")[1]
+  var args = []
+  if(url != undefined){
+    if(url.split("&") != undefined){
+      var url = url.split("&")  
+      url.forEach(element => {
+        args[element.split("=")[0]] = element.split("=")[1]
+      });
+    }else{
+      args[url.split("=")[0]] = urrl.split("=")[1]
+    }
+  }
   try{
     Interval["count"] = Interval["count"] + 1;
     const index = Interval["count"];
@@ -117,13 +127,10 @@ app.post("/upload",(req,res) => {
       }
       try{
         res.redirect(req.baseUrl + "/show?id=" + ShowId[1][index])
-        Interval["count"] = Interval["count"] + 1
-        Interval[index] = setInterval(() => {
-          fs.promises.access(__dirname + "/temp/" + filename).then(function(){
-            exec("python " + __dirname + "/convert.py " + __dirname + "/temp/" + filename)
-            clearInterval(index)
-          }).catch(function(){});
-        },10000);
+        var init = exec("python " + __dirname + "/init.py " + parseInt(args["resolution"]) + " " + parseInt(args["pixelresolution"]))
+        init.on('exit',function(){
+          exec("python " + __dirname + "/convert.py " + __dirname + "/temp/" + filename + " " + parseInt(args["resolution"]) + " " + parseInt(args["pixelresolution"]))
+        });
       }
       catch(err){
         console.log(err)
