@@ -96,21 +96,26 @@ app.get('/', (req, res) => {
 
 var toConvert = []
 
-function convert(filename,resolution,pixelresolution){
-  var init = exec("python " + __dirname + "/init.py " + resolution + " " + pixelresolution)
-  init.on('exit',function(){
-    var convert = exec("python " + __dirname + "/convert.py " + __dirname + "/temp/" + filename + " " + resolution + " " + pixelresolution)
-    convert.on('exit',function(){
-      if(toConvert[1] == undefined){
+Interval["count"] = Interval["count"] + 1;
+const index = Interval["count"];
+var oldConvert = undefined
+Interval[index] = setInterval(() => {
+  if(toConvert[0] != undefined & oldConvert != toConvert[0]){
+    oldConvert = toConvert[0]
+    const filename = toConvert[0][0]
+    const resolution = toConvert[0][1]
+    const pixelresolution = toConvert[0][2]
+    var init = exec("python " + __dirname + "/init.py " + resolution + " " + pixelresolution)
+    console.log("Start init " + resolution + " " + pixelresolution)
+    init.on('exit',function(){
+      console.log("Start convert " + __dirname + "/temp/" + filename + " " + resolution + " " + pixelresolution)
+      var convert = exec("python " + __dirname + "/convert.py " + __dirname + "/temp/" + filename + " " + resolution + " " + pixelresolution)
+      convert.on('exit',function(){
         toConvert.shift()
-      }else{
-        toConvert.shift()
-        convert(toConvert[0][0],toConvert[0][1],toConvert[0][2])
-      }
+      });
     });
-  });
-}
-
+  }
+},100);
 
 app.post("/upload",(req,res) => {
   var url = req.url.split("?")[1]
@@ -145,12 +150,7 @@ app.post("/upload",(req,res) => {
       }
       try{
         res.redirect(req.baseUrl + "/show?id=" + ShowId[1][index])
-        if(toConvert[0] == undefined){
-          toConvert.push([filename,parseInt(args["resolution"]),parseInt(args["pixelresolution"])])
-          convert(filename,parseInt(args["resolution"]),parseInt(args["pixelresolution"]))
-        }else{
-          toConvert.push([filename,parseInt(args["resolution"]),parseInt(args["pixelresolution"])])
-        }
+        toConvert.push([filename,parseInt(args["resolution"]),parseInt(args["pixelresolution"])])
       }
       catch(err){
         console.log(err)
