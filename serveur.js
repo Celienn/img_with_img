@@ -48,7 +48,7 @@ app.get('/show', (req, res) => {
         args[element.split("=")[0]] = element.split("=")[1]
       });
     }else{
-      args[url.split("=")[0]] = urrl.split("=")[1]
+      args[url.split("=")[0]] = url.split("=")[1]
     }
   }
   ShowId[0].forEach(element => {
@@ -72,7 +72,7 @@ app.get('/', (req, res) => {
         args[element.split("=")[0]] = element.split("=")[1]
       });
     }else{
-      args[url.split("=")[0]] = urrl.split("=")[1]
+      args[url.split("=")[0]] = url.split("=")[1]
     }
   }
     if(args["file"] == undefined){
@@ -127,7 +127,7 @@ app.post("/upload",(req,res) => {
         args[element.split("=")[0]] = element.split("=")[1]
       });
     }else{
-      args[url.split("=")[0]] = urrl.split("=")[1]
+      args[url.split("=")[0]] = url.split("=")[1]
     }
   }
   try{
